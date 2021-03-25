@@ -4,8 +4,10 @@ import tag_detection
 import distance_measurement
 import markerlib
 import math
+import time
 from detect import *
 # Input
+start_time = time.time()
 filename = '4_0.0_mid.jpg'
 tag_type = 'aruco_4x4'
 
@@ -28,7 +30,7 @@ new_image.draw_tags()
 markers = [distance_measurement.get_corner_points(new_image, i) for i in range(len(new_image.ids))]
 shelf = markerlib.Shelf(markers)
 # box finding code:
-source_img = f'graphics/calibration_output/{filename}.jpg'
+source_img = f'graphics/calibration_output/{filename}'
 weights = 'best.pt'
 
 # conf is the confidence threshold of the detection
@@ -39,10 +41,9 @@ weights = 'best.pt'
 # save_img=True saves the image with boundingboxes
 
 # for fastest result use device='', save_txt=False, save_conf=True, save_img=False
-coords = detect2(source_img, weights, conf=0.7, iou_thres=0.45, device='cpu', save_txt=False, save_conf=True,
+coords = detect2(source_img, weights, conf=0.7, iou_thres=0.45, device='', save_txt=False, save_conf=True,
                  save_img=False)
 
-print(coords)
 h, w = new_image.image.shape[:2]
 boxes = []
 for line in coords.split('\n'):
@@ -56,7 +57,7 @@ for line in coords.split('\n'):
 print(shelf)
 for i in range(3):
     print(shelf.planes[i].get_plane_distance())
-
+end_time = time.time()
 # Plot plane areas:
 for plane in shelf.planes:
     cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y)),
@@ -71,5 +72,3 @@ for box in boxes:
 cv2.imshow('Tags', new_image.image)
 cv2.imwrite("graphics/test.jpg", new_image.image)
 cv2.waitKey(0)
-
-#1239.9865705358163,0.0,1163.2364967810950.0,1250.0790335853487,904.73127241027650.0,0.0,1.0-0.2990077843090973,0.11025572359961867,-0.0006408485381324832,0.001213706562878266,-0.021134022438474565

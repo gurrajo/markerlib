@@ -13,7 +13,7 @@ class Tag:
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.ids, self.corners = self.detect_tags()  # necessary for rotation
-        #self.image = self.rotate_image()
+        self.image = self.rotate_image()
         self.ids, self.corners = self.detect_tags()  # after rotation re-read
 
     def get_dict(self):
@@ -32,24 +32,33 @@ class Tag:
         return used_dict
 
     def image_read(self, fname):
-        #matrix, distortion = get_camera_matrix()
-        matrix = np.array([[1239.9865705358163, 0.0, 1163.236496781095],[0.0, 1250.0790335853487, 904.7312724102765],[0.0, 0.0, 1.0]])
-        distortion = np.array([-0.2990077843090973,0.11025572359961867,-0.0006408485381324832,0.001213706562878266,-0.021134022438474565])
-
+        matrix = np.array([[1239.9865705358163, 0.0, 1163.236496781095], [0.0, 1250.0790335853487, 904.7312724102765],[0.0, 0.0, 1.0]])
+        distortion = np.array([-0.2990077843090973, 0.11025572359961867, -0.0006408485381324832, 0.001213706562878266, -0.021134022438474565])
+        newcameramtx = np.array([[1.01386385e+03, 0.00000000e+00, 1.16515228e+03],
+                                [0.00000000e+00, 1.05031275e+03, 9.05845699e+02],
+                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])  # alpha = 0.25
         image = cv2.imread(fname)
         h, w = image.shape[:2]
-        newcameramtx, roi = cv2.getOptimalNewCameraMatrix(matrix, distortion, (w, h), 0.4, (w, h))
-        dst = cv2.undistort(image, matrix, distortion, None, None)
-        # The following 2 lines are used if you crop the image(Current configuration uses alpha=0.55 and does NOT crop the image)
-        #x, y, w, h = roi
-        #cropped_dst = dst[y:y+h,x:x+w]
+        print(newcameramtx)
+        dst = cv2.undistort(image, matrix, distortion, None, newcameramtx)
         return dst
 
     def rotate_image(self):
-        angle = 180
-        image_center = tuple(np.array(self.image.shape[1::-1]) / 2)
-        rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-        rot_image = cv2.warpAffine(self.image, rot_mat, self.image.shape[1::-1], flags=cv2.INTER_LINEAR)
+        # Get orientation
+        (h, w) = self.image.shape[:2]
+        (cX, cY) = (w // 2, h // 2)
+        centerpoint2 = sum(self.corners[2][0]) / 4
+        centerpoint3 = sum(self.corners[3][0]) / 4
+        dx = centerpoint3[0] - centerpoint2[0]
+        dy = centerpoint3[1] - centerpoint2[1]
+        center = (centerpoint3 + centerpoint2) / 2
+        angle_degrees = np.arctan(dy / dx) * 180 / np.pi
+        rot_matrix = cv2.getRotationMatrix2D((center[0], center[1]), angle_degrees/2, 1)
+        rot_image = cv2.warpAffine(self.image, rot_matrix, (2304, 1728))
+        if self.corners[0, 0, 0, 1] > self.corners[0, 0, 2, 1]:
+            rotation_matrix = cv2.getRotationMatrix2D((cX, cY), 180, 1.0)
+            rot_image = cv2.warpAffine(rot_image, rotation_matrix, (w, h))
+            ids, corners = self.detect_tags()
         return rot_image
 
     def detect_tags(self):

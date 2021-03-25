@@ -5,7 +5,7 @@ class Shelf:
 
     def add_box_plane(self, box):
         for plane in self.planes:
-            if plane.y*0.9 < box.y[0] < plane.y*1.1:
+            if plane.y*0.99 < box.y[0] < plane.y*1.01:
                 if plane.x[0] < box.x[0] and plane.x[1] > box.x[1]:
                     plane.add_box(box)
                     return
@@ -24,19 +24,19 @@ class Plane:
             self.real_z = 100
             self.real_y = 0
             self.marker = [Marker(markers[0]), Marker(markers[1])]
-            self.y = (self.marker[0].y[3] + self.marker[0].y[2] + self.marker[1].y[2] + self.marker[1].y[3])/4 # assumes marker placed on edge of plane
+            self.y = (self.marker[0].y[3] + self.marker[1].y[3])/2 # assumes marker placed on edge of plane
             self.x = [self.marker[1].x[2], self.marker[0].x[3]]
         elif plane_id == 1:
             self.real_z = 200
             self.real_y = 50
             self.marker = [Marker(markers[2]), Marker(markers[3])]
-            self.y = (self.marker[0].y[3] + self.marker[0].y[2] + self.marker[1].y[2] + self.marker[1].y[3])/4
+            self.y = (self.marker[0].y[3] + self.marker[1].y[3])/2
             self.x = [self.marker[1].x[2], self.marker[0].x[3]]
         elif plane_id == 2:
             self.real_z = 300
             self.real_y = 100
             self.marker = [Marker(markers[4]), Marker(markers[5])]
-            self.y = (self.marker[0].y[3] + self.marker[0].y[2] + self.marker[1].y[2] + self.marker[1].y[3])/4
+            self.y = (self.marker[0].y[3] + self.marker[1].y[3])/2
             self.x = [self.marker[1].x[2], self.marker[0].x[3]]
         else:
             print(f"wrong plane id{plane_id}")
@@ -55,11 +55,12 @@ class Plane:
         return (box.x[0] - self.marker[0].x[2])*x_funk
 
     def get_plane_distance(self):
-        factor_0 = self.marker[0].size*2/((self.marker[0].x[1] - self.marker[0].x[0]) + self.marker[0].x[2] - self.marker[0].x[3])
-        factor_1 = self.marker[1].size*2/((self.marker[1].x[1] - self.marker[1].x[0]) + self.marker[1].x[2] - self.marker[1].x[3])
+        factor_0 = self.marker[0].size*2/((self.marker[0].x[1] - self.marker[0].x[0]) + (self.marker[0].x[2] - self.marker[0].x[3]))
+        factor_1 = self.marker[1].size*2/((self.marker[1].x[1] - self.marker[1].x[0]) + (self.marker[1].x[2] - self.marker[1].x[3]))
         p_dist = abs(self.marker[0].center_point[0] - self.marker[1].center_point[0])
         distance = p_dist*(factor_0+factor_1)/2
         return distance
+
 
 class Marker:
     def __init__(self, marker):
