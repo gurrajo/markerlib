@@ -8,7 +8,7 @@ import time
 from detect import *
 # Input
 start_time = time.time()
-filename = '4_0.0_mid.jpg'
+filename = '4_1.0_mid.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -27,8 +27,9 @@ def check_detected_tags():
 #check_detected_tags()
 new_image = tag_detection.Tag(filename, tag_type)
 new_image.draw_tags()
-markers = [distance_measurement.get_corner_points(new_image, i) for i in range(len(new_image.ids))]
-shelf = markerlib.Shelf(markers)
+optimal_values = [194.5, 173.0, 1.542946150422786]
+new_image.re_orient_image(optimal_values, new_image.markers)
+shelf = markerlib.Shelf(new_image.markers)
 # box finding code:
 source_img = f'graphics/calibration_output/{filename}'
 weights = 'best.pt'
@@ -60,8 +61,11 @@ for i in range(3):
 end_time = time.time()
 # Plot plane areas:
 for plane in shelf.planes:
-    cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y)),
-             (math.floor(plane.x[1]), math.floor(plane.y)), (255, 0, 0), 2)
+    cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y*0.99)),
+             (math.floor(plane.x[1]), math.floor(plane.y*0.99)), (255, 0, 0), 1)
+    cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y*1.01)),
+             (math.floor(plane.x[1]), math.floor(plane.y*1.01)), (255, 0, 0), 1)
+
 
 # Plot boxes:
 for box in boxes:

@@ -57,7 +57,7 @@ class Plane:
     def get_plane_distance(self):
         factor_0 = self.marker[0].size*2/((self.marker[0].x[1] - self.marker[0].x[0]) + (self.marker[0].x[2] - self.marker[0].x[3]))
         factor_1 = self.marker[1].size*2/((self.marker[1].x[1] - self.marker[1].x[0]) + (self.marker[1].x[2] - self.marker[1].x[3]))
-        p_dist = abs(self.marker[0].center_point[0] - self.marker[1].center_point[0])
+        p_dist = self.marker[0].center_point[0] - self.marker[1].center_point[0]
         distance = p_dist*(factor_0+factor_1)/2
         return distance
 
@@ -65,7 +65,7 @@ class Plane:
 class Marker:
     def __init__(self, marker):
         # marker must be: list(list(x),list(y), id)
-        self.size = 100  # Marker size
+        self.size = 99  # Marker size
         self.x = marker[0]
         self.y = marker[1]
         self.marker_id = marker[2]
@@ -88,7 +88,5 @@ class Box:
         self.conf = float(coords[5])
         self.x = [box_x+box_w/2, box_x-box_w/2]
         self.y = [box_y+box_h/2, box_y-box_h/2]
-        print(self.x)
-        print(self.y)
 
 
