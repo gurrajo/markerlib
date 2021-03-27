@@ -13,7 +13,6 @@ class Tag:
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
-
         self.image = self.rotate_image()
         self.markers, self.corners, self.ids = self.detect_tags()  # after rotation re-read
 
@@ -93,33 +92,21 @@ class Tag:
         for marker in markers:
             marker_center.append([sum(marker[0]) / 4, sum(marker[1]) / 4])
 
-        x_dif = [marker_center[1][0] - marker_center[5][0], marker_center[4][0] - marker_center[0][0]]
+        points = [[marker_center[0]],
+                  [marker_center[1]],
+                  [(marker_center[4][0] + marker_center[5][0])/2, (marker_center[4][1] + marker_center[5][1])/2]]
         b_h_ratio = (marker_center[4][0] - marker_center[5][0])/(marker_center[0][1]-marker_center[4][1])
-        return [x_dif + [b_h_ratio]]
+        return points
 
-    def re_orient_image(self, optimal_values, markers):
+    def re_orient_image(self, pts1):
         rows, cols, ch = self.image.shape
-        x_dif0 = optimal_values[:2]
-        b_h_ratio = optimal_values[2]
         marker_center = []
-        for marker in markers:
+        for marker in self.markers:
             marker_center.append([sum(marker[0]) / 4, sum(marker[1]) / 4])
-        b1 = (marker_center[4][0] - marker_center[5][0])
-        h1 = (marker_center[0][1] - marker_center[4][1])
-        alpha = (b1/b_h_ratio) - h1
-        print(alpha)
-        x_dif1 = [marker_center[1][0] - marker_center[5][0], marker_center[4][0] - marker_center[0][0]]
-        dif_x_dif = [x_dif0[0]-x_dif1[0], x_dif0[1]-x_dif1[1]]
-        pts1 = [[marker_center[0][0] + dif_x_dif[1], marker_center[0][1] + (alpha / 2)],
-                [marker_center[1][0] + dif_x_dif[0], marker_center[1][1] + (alpha / 2)],
-                [marker_center[4][0] - dif_x_dif[1], marker_center[4][1] - (alpha / 2)],
-                [marker_center[5][0] - dif_x_dif[0], marker_center[5][1] - (alpha / 2)]]
-        pts2 = marker_center[0:2] + marker_center[4:6]
-        pts1 = np.float32(pts1)
-        pts2 = np.float32(pts2)
-        print(pts1)
-        print(pts2)
-        M = cv2.getAffineTransform(pts1, pts2)
+        pts2 = np.float32([marker_center[0],
+                           marker_center[1],
+                           [(marker_center[4][0] + marker_center[5][0])/2, (marker_center[4][1] + marker_center[5][1])/2]])
+        M = cv2.getAffineTransform(np.float32(pts1), pts2)
         dst = cv2.warpAffine(self.image, M, (cols, rows))
         cv2.imshow("test", dst)
         cv2.waitKey(0)

@@ -27,8 +27,8 @@ def check_detected_tags():
 #check_detected_tags()
 new_image = tag_detection.Tag(filename, tag_type)
 new_image.draw_tags()
-optimal_values = [194.5, 173.0, 1.542946150422786]
-new_image.re_orient_image(optimal_values, new_image.markers)
+optimal_values = [[1374.25, 1148.0], [875.0, 1149.0], [1104.375, 590.5]]
+#new_image.re_orient_image(optimal_values)
 shelf = markerlib.Shelf(new_image.markers)
 # box finding code:
 source_img = f'graphics/calibration_output/{filename}'
