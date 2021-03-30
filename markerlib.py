@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Shelf:
     def __init__(self, markers):
         self.planes = [Plane(i, markers) for i in range(3)]
@@ -5,7 +8,7 @@ class Shelf:
 
     def add_box_plane(self, box):
         for plane in self.planes:
-            if plane.y*0.99 < box.y[0] < plane.y*1.01:
+            if plane.y - (plane.marker[0].y[2] - plane.marker[0].y[1])/4 < box.y[0] < plane.y + (plane.marker[0].y[2] - plane.marker[0].y[1])/4:
                 if plane.x[0] < box.x[0] and plane.x[1] > box.x[1]:
                     plane.add_box(box)
                     return
@@ -42,17 +45,24 @@ class Plane:
             print(f"wrong plane id{plane_id}")
 
     def __str__(self):
-        plane_str = f"plane ID:{self.plane_id} x = {self.x} y = {self.y}, real x = {self.real_x}, real y = {self.real_y}, real z = {self.real_z}\n"
-        box_str = "box x value from left tag: " + "".join([f" {self.get_box_x(box)} " for box in self.boxes])
+        plane_str = f"plane :{self.plane_id} real y = {self.real_y}, real z = {self.real_z}\n"
+        box_str = "x value from right most tag: " + "".join([f"{self.get_box_x(box)}" for box in self.boxes])
         return plane_str + box_str + "\n"
 
     def add_box(self, box):
         self.boxes.append(box)
 
     def get_box_x(self, box):
-        x_funk = (self.marker[0].size*2)/((self.marker[0].x[3]-self.marker[0].x[2]) + (self.marker[1].x[3] - self.marker[1].x[2]))  # describes x value coorelation in plane
-        # x value from ref point left marker lower right corner
-        return (box.x[0] - self.marker[0].x[2])*x_funk
+        factor_0 = self.marker[0].size * 2 / (
+                    (self.marker[0].x[1] - self.marker[0].x[0]) + (self.marker[0].x[2] - self.marker[0].x[3]))
+        factor_1 = self.marker[1].size * 2 / (
+                    (self.marker[1].x[1] - self.marker[1].x[0]) + (self.marker[1].x[2] - self.marker[1].x[3]))
+        p0_dist = [(self.marker[0].center_point[0] - box.x[0]), (box.x[0] - self.marker[1].center_point[0])]
+        p1_dist = [(self.marker[0].center_point[0] - box.x[1]), (box.x[1] - self.marker[1].center_point[0])]
+        w0 = np.divide(np.array([p0_dist[1], p0_dist[0]]), self.marker[0].center_point[0] - self.marker[1].center_point[0])
+        w1 = np.divide(np.array([p1_dist[1], p1_dist[0]]), self.marker[0].center_point[0] - self.marker[1].center_point[0])# weight based on closeness to either markers
+        x_values = p0_dist[0]*((factor_0*w0[0]) + (factor_1*w0[1]))/2, p1_dist[0]*((factor_0*w1[0]) + (factor_1*w1[1]))/2
+        return x_values
 
     def get_plane_distance(self):
         factor_0 = self.marker[0].size*2/((self.marker[0].x[1] - self.marker[0].x[0]) + (self.marker[0].x[2] - self.marker[0].x[3]))

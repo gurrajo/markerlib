@@ -106,7 +106,7 @@ class Tag:
         pts2 = np.float32([marker_center[0],
                            marker_center[1],
                            [(marker_center[4][0] + marker_center[5][0])/2, (marker_center[4][1] + marker_center[5][1])/2]])
-        M = cv2.getAffineTransform(np.float32(pts1), pts2)
+        M = cv2.getAffineTransform(pts2, np.float32(pts1))
         dst = cv2.warpAffine(self.image, M, (cols, rows))
         cv2.imshow("test", dst)
         cv2.waitKey(0)

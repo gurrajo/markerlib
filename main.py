@@ -5,10 +5,12 @@ import distance_measurement
 import markerlib
 import math
 import time
+import os
+import numpy as np
 from detect import *
 # Input
 start_time = time.time()
-filename = '4_1.0_mid.jpg'
+filename = '4_0.0_mid.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -27,12 +29,13 @@ def check_detected_tags():
 #check_detected_tags()
 new_image = tag_detection.Tag(filename, tag_type)
 new_image.draw_tags()
-optimal_values = [[1374.25, 1148.0], [875.0, 1149.0], [1104.375, 590.5]]
+#optimal_values = [[1374.25, 1148.0], [875.0, 1149.0], [1104.375, 590.5]]
 #new_image.re_orient_image(optimal_values)
 shelf = markerlib.Shelf(new_image.markers)
 # box finding code:
 source_img = f'graphics/calibration_output/{filename}'
 weights = 'best.pt'
+
 
 # conf is the confidence threshold of the detection
 # iou_threshold is the area of overlap
@@ -61,10 +64,10 @@ for i in range(3):
 end_time = time.time()
 # Plot plane areas:
 for plane in shelf.planes:
-    cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y*0.99)),
-             (math.floor(plane.x[1]), math.floor(plane.y*0.99)), (255, 0, 0), 1)
-    cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y*1.01)),
-             (math.floor(plane.x[1]), math.floor(plane.y*1.01)), (255, 0, 0), 1)
+    cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y - (plane.marker[0].y[2] - plane.marker[0].y[1])/4)),
+             (math.floor(plane.x[1]), math.floor(plane.y - (plane.marker[0].y[2] - plane.marker[0].y[1])/4)), (255, 0, 0), 1)
+    cv2.line(new_image.image, (math.floor(plane.x[0]), math.floor(plane.y + (plane.marker[0].y[2] - plane.marker[0].y[1])/4)),
+             (math.floor(plane.x[1]), math.floor(plane.y + (plane.marker[0].y[2] - plane.marker[0].y[1])/4)), (255, 0, 0), 1)
 
 
 # Plot boxes:
