@@ -55,13 +55,22 @@ for line in coords.split('\n'):
         boxes.append(box)
         shelf.add_box_plane(box)
 
-error_sum = 0
-for plane in shelf.planes:
-    error = np.reshape(plane.get_x_error(), (1, -1))
-    error_sum += sum(error[0])
-    print(f'plane ID:{plane.plane_id} absolute error: {error} in mm')
 
-print(f'average absolute error:{error_sum/12} in mm')
+errors = []
+for plane in shelf.planes:
+    error = np.reshape(plane.get_x_error(), (1, -1)).tolist()
+    errors.extend(error[0])
+
+    print(f'plane ID:{plane.plane_id} absolute error: {error[0]} in mm')
+mean = sum(errors)/12
+dev = []
+print(errors)
+for err in errors:
+    dev.append((err-mean)**2)
+var = sum(dev)/mean
+std = np.sqrt(var)
+print(f'average absolute error:{mean} in mm')
+print(f'standard deviation: {std}')
 
 
 #shelf.disp_planes(new_image, boxes)
