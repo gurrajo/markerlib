@@ -10,7 +10,7 @@ import numpy as np
 from detect import *
 # Input
 start_time = time.time()
-filename = '4_0.5_mid.jpg'
+filename = '4_0.0_mid.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -55,8 +55,14 @@ for line in coords.split('\n'):
         boxes.append(box)
         shelf.add_box_plane(box)
 
+error_sum = 0
 for plane in shelf.planes:
-    print(f'{plane.get_x_error()} absolute error in mm')
+    error = np.reshape(plane.get_x_error(), (1, -1))
+    error_sum += sum(error[0])
+    print(f'plane ID:{plane.plane_id} absolute error: {error} in mm')
+
+print(f'average absolute error:{error_sum/12} in mm')
+
 
 #shelf.disp_planes(new_image, boxes)
 # turn coords into box objects:
