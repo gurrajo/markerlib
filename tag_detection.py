@@ -13,8 +13,11 @@ class Tag:
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
-        self.image = self.rotate_image()
-        self.markers, self.corners, self.ids = self.detect_tags()  # after rotation re-read
+        if self.ids is not None:
+            if len(self.ids) == 6:
+                self.image = self.rotate_image()
+                self.markers, self.corners, self.ids = self.detect_tags()  # after rotation re-read
+        cv2.imwrite(f'graphics/cv/{self.fname}', self.image)
 
     def get_dict(self):
         super().__init__()
@@ -46,7 +49,6 @@ class Tag:
         # Get orientation
         (h, w) = self.image.shape[:2]
         (cX, cY) = (w // 2, h // 2)
-
         centerpoint2 = [sum(self.markers[2][0])/4, sum(self.markers[2][1])/4]
         centerpoint3 = [sum(self.markers[3][0])/4, sum(self.markers[3][1])/4]
         dx = centerpoint3[0] - centerpoint2[0]
@@ -66,6 +68,8 @@ class Tag:
         corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, self.dict, parameters=aruco_parameters)
         corners = np.array(corners)
         markers = []
+        if ids is None:
+            return markers, [], []
         for tag_id in range(len(ids)):
             for i in range(len(ids)):
                 current_id = ids[i]

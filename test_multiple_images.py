@@ -10,7 +10,6 @@ import numpy as np
 from detect import *
 # Input
 start_time = time.time()
-filename = '4_0.5_mid.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -26,14 +25,20 @@ def check_detected_tags():
                 writer.writerow(f"{fname}{new_image.ids}")
 
 
-
-
-new_image = tag_detection.Tag(filename, tag_type)
-
-shelf = markerlib.Shelf(new_image.markers)
+images = glob.glob('graphics/images_from_tests/*.jpg')
+for i, fname in enumerate(images):
+    fname = os.path.basename(fname)
+    new_image = tag_detection.Tag(fname, tag_type)
+    if new_image.ids is None:
+        print("No ids detected")
+        continue
+    if len(new_image.ids) < 6:
+        print("5 or fewer ids detected")
+        continue
+    shelf = markerlib.Shelf(new_image.markers)
 # box finding code:
-source_img = f'graphics/cv/{filename}'
-weights = 'best.pt'
+    source_img = f'graphics/cv/{fname}'
+    weights = 'best.pt'
 
 
 # conf is the confidence threshold of the detection
@@ -44,24 +49,18 @@ weights = 'best.pt'
 # save_img=True saves the image with boundingboxes
 
 # for fastest result use device='', save_txt=False, save_conf=True, save_img=False
-coords = detect2(source_img, weights, conf=0.7, iou_thres=0.45, device='', save_txt=False, save_conf=True,
+    coords = detect2(source_img, weights, conf=0.7, iou_thres=0.45, device='', save_txt=False, save_conf=True,
                  save_img=False)
 
-h, w = new_image.image.shape[:2]
-boxes = []
-for line in coords.split('\n'):
-    if line:
-        box = markerlib.Box(line, h, w)
-        boxes.append(box)
-        shelf.add_box_plane(box)
-
-for plane in shelf.planes:
-    print(f'{plane.get_x_error()} absolute error in mm')
-
-#shelf.disp_planes(new_image, boxes)
-# turn coords into box objects:
-#shelf.add_box_plane(box)
-# shelf information:
-print(shelf)
-
-shelf.disp_planes(new_image, boxes)
+    h, w = new_image.image.shape[:2]
+    boxes = []
+    for line in coords.split('\n'):
+        if line:
+            box = markerlib.Box(line, h, w)
+            boxes.append(box)
+            shelf.add_box_plane(box)
+    #shelf.disp_planes(new_image, boxes)
+    # turn coords into box objects:
+    #shelf.add_box_plane(box)
+    # shelf information:
+    print(shelf)
