@@ -52,7 +52,8 @@ class Plane:
         self.boxes = []
         self.real_x = [0, 2220]
         if plane_id == 0:
-            self.true_x_vals = [[222, 622], [645, 1245], [1318, 1718], [1733, 2028]]
+            self.true_x_vals_left = [222, 645, 1318,  1733, ]
+            self.true_x_vals_right = [622, 1245, 1718, 2028]
             self.real_z = 100
             self.real_y = 0
             self.marker = [Marker(markers[0]), Marker(markers[1])]
@@ -62,7 +63,8 @@ class Plane:
             self.upper_limit = self.y + 1*(self.marker[0].y[2] - self.marker[0].y[1]) / 6
             self.real_dist = 2220
         elif plane_id == 1:
-            self.true_x_vals = [[97, 392], [423, 718], [744, 1144], [1231, 1526], [1544, 1839], [1864, 2159]]
+            self.true_x_vals_left = [97,  423,  744,  1231,  1544,  1864]
+            self.true_x_vals_right = [392, 718, 1144, 1526, 1839, 2159]
             self.real_z = 200
             self.real_y = 50
             self.marker = [Marker(markers[2]), Marker(markers[3])]
@@ -128,8 +130,15 @@ class Plane:
     def get_x_error(self):
         x_val = [self.get_box_x(box) for box in self.boxes]
         x_val = sorted(x_val)
-        error = [np.subtract(x, true).tolist() for x, true in zip(x_val, self.true_x_vals)]
-        error = [[abs(err[0]), err[1]] for err in error]
+        error = []
+        for x in x_val:
+            array1 = np.asarray(self.true_x_vals_left)
+            idx_left = (np.abs(array1 - x[0])).argmin()
+            array2 = np.asarray(self.true_x_vals_right)
+            idx_right = (np.abs(array2 - x[1])).argmin()
+            error.append(np.subtract(x[0], self.true_x_vals_left[idx_left]))
+            error.append(np.subtract(x[1], self.true_x_vals_right[idx_left]))
+        error = [abs(err) for err in error]
         return error
 
     def optimize_marker(self, marker_multiplier):

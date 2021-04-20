@@ -10,7 +10,7 @@ import numpy as np
 from detect import *
 # Input
 start_time = time.time()
-filename = '0.0_2.0.jpg'
+filename = '1.0_2.0.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -25,6 +25,8 @@ def check_detected_tags():
             else:
                 writer.writerow(f"{fname}{new_image.ids}")
 
+def write_shelf_text():
+    asd = 0
 
 new_image = tag_detection.Tag(filename, tag_type)
 # new_image.re_orient_image()

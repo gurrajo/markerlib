@@ -19,12 +19,15 @@ class Tag:
             if len(self.ids) == 6:
                 self.image = self.rotate_image()
             else:
+                temp_image = self.image
                 for ang in range(5, 361, 5):
+                    self.image = temp_image
                     rot_matrix = cv2.getRotationMatrix2D((w // 2, h // 2), ang, 1)
                     self.image = cv2.warpAffine(self.image, rot_matrix, (w, h))
                     self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
                     if len(self.ids) == 6:
                         self.image = self.rotate_image()
+                        self.draw_tags()
                         break
         cv2.imwrite(f'graphics/cv/{self.fname}', self.image)
 

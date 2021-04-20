@@ -67,8 +67,6 @@ for i, fname in enumerate(images):
     for plane in shelf.planes:
         if plane.plane_id == 2:
             continue
-        if len(plane.boxes) is not len(plane.true_x_vals):
-            continue
         error = np.reshape(plane.get_x_error(), (1, -1)).tolist()
         errors.extend(error[0])
 
