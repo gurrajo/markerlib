@@ -25,7 +25,7 @@ def check_detected_tags():
                 writer.writerow(f"{fname}{new_image.ids}")
 
 
-images = glob.glob('graphics/images_from_tests/*.jpg')
+images = glob.glob('graphics/skovde_4meter/*.jpg')
 full_std = []
 full_mean = []
 full_errors = []
@@ -65,24 +65,28 @@ for i, fname in enumerate(images):
 
     errors = []
     for plane in shelf.planes:
+        if plane.plane_id == 2:
+            continue
+        if len(plane.boxes) is not len(plane.true_x_vals):
+            continue
         error = np.reshape(plane.get_x_error(), (1, -1)).tolist()
         errors.extend(error[0])
 
-        print(f'plane ID:{plane.plane_id} absolute error: {error[0]} in mm')
+        #print(f'plane ID:{plane.plane_id} absolute error: {error[0]} in mm')
     mean = sum(errors) / 12
     dev = []
-    print(errors)
+    #print(errors)
     for err in errors:
         dev.append((err - mean) ** 2)
     var = sum(dev) / mean
     std = np.sqrt(var)
-    print(f'average absolute error:{mean} in mm')
-    print(f'standard deviation: {std}')
+    #print(f'average absolute error:{mean} in mm')
+    #print(f'standard deviation: {std}')
     full_std.append(std)
     full_mean.append(mean)
     full_errors.append(errors)
 
-print(full_std)
-print(full_mean)
-print(full_errors)
+#print(f'Standard deviation of successful calculations {full_std}')
+print(f'Mean of successful calculations {full_mean}')
+#print(f'Errors of successful calculations {full_errors}')
 

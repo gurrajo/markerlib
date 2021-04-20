@@ -9,14 +9,23 @@ class Tag:
     """
     def __init__(self, fname, tag_type):
         self.fname = fname
-        self.image = self.image_read(f"graphics/images_from_tests/{fname}")
+        self.image = self.image_read(f"graphics/skovde_4meter/{fname}")
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
+
+        (h, w) = self.image.shape[:2]
         if self.ids is not None:
             if len(self.ids) == 6:
                 self.image = self.rotate_image()
-                self.markers, self.corners, self.ids = self.detect_tags()  # after rotation re-read
+            else:
+                for ang in range(5, 361, 5):
+                    rot_matrix = cv2.getRotationMatrix2D((w // 2, h // 2), ang, 1)
+                    self.image = cv2.warpAffine(self.image, rot_matrix, (w, h))
+                    self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
+                    if len(self.ids) == 6:
+                        self.image = self.rotate_image()
+                        break
         cv2.imwrite(f'graphics/cv/{self.fname}', self.image)
 
     def get_dict(self):
@@ -51,15 +60,18 @@ class Tag:
         (cX, cY) = (w // 2, h // 2)
         centerpoint2 = [sum(self.markers[2][0])/4, sum(self.markers[2][1])/4]
         centerpoint3 = [sum(self.markers[3][0])/4, sum(self.markers[3][1])/4]
-        dx = centerpoint3[0] - centerpoint2[0]
-        dy = centerpoint3[1] - centerpoint2[1]
+        dx = centerpoint2[0] - centerpoint3[0]
+        dy = centerpoint2[1] - centerpoint3[1]
         # center = (centerpoint3 + centerpoint2) / 2
         angle_degrees = np.arctan(dy / dx) * 180 / np.pi
         rot_matrix = cv2.getRotationMatrix2D((cX, cY), angle_degrees, 1)
+        self.rotate_tags(rot_matrix)
         rot_image = cv2.warpAffine(self.image, rot_matrix, (w, h))
-        if self.markers[0][0] < self.markers[1][0]:
+        if self.markers[0][0] > self.markers[1][0]:
             rotation_matrix = cv2.getRotationMatrix2D((cX, cY), 180, 1.0)
             rot_image = cv2.warpAffine(rot_image, rotation_matrix, (w, h))
+            self.rotate_tags(rotation_matrix)
+
         return rot_image
 
     def detect_tags(self):
@@ -82,11 +94,29 @@ class Tag:
                     markers.append([x, y, tag_id])
         return markers, corners, ids
 
+    def rotate_tags(self, M):
+        markers = []
+        src = np.array(self.corners)
+        corners = [cv2.transform(src[i], M) for i in range(6)]
+        corners = np.array(corners)
+        for tag_id in range(len(self.ids)):
+            for i in range(len(self.ids)):
+                current_id = self.ids[i]
+                if current_id == tag_id:
+                    x = [corners[i, 0, 0, 0], corners[i, 0, 1, 0],
+                         corners[i, 0, 2, 0], corners[i, 0, 3, 0]]
+
+                    y = [corners[i, 0, 0, 1], corners[i, 0, 1, 1],
+                         corners[i, 0, 2, 1], corners[i, 0, 3, 1]]
+                    markers.append([x, y, tag_id])
+        self.markers = markers
+        self.corners = corners
+
     def draw_tags(self):
         scale = 1
         image = cv2.resize(self.image, (0, 0), fx=scale, fy=scale)
         frame = cv2.aruco.drawDetectedMarkers(image, self.corners*scale, self.ids)
-        cv2.imwrite(f'graphics/calibration_output/{self.fname}', image)
+        cv2.imwrite(f'graphics/calibration_output/test{self.fname}', image)
         cv2.imshow('Tags', frame)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -102,16 +132,24 @@ class Tag:
         b_h_ratio = (marker_center[4][0] - marker_center[5][0])/(marker_center[0][1]-marker_center[4][1])
         return points
 
-    def re_orient_image(self, pts1):
+    def re_orient_image(self):
         rows, cols, ch = self.image.shape
+
         marker_center = []
         for marker in self.markers:
             marker_center.append([sum(marker[0]) / 4, sum(marker[1]) / 4])
-        pts2 = np.float32([marker_center[0],
-                           marker_center[1],
-                           [(marker_center[4][0] + marker_center[5][0])/2, (marker_center[4][1] + marker_center[5][1])/2]])
-        M = cv2.getAffineTransform(pts2, np.float32(pts1))
+        src_center = [np.mean([marker_center[1][0], marker_center[0][0]]), np.mean([marker_center[1][1], marker_center[0][1]])]
+        new_center = [np.mean([marker_center[4][0], marker_center[5][0]]), np.mean([marker_center[1][1], marker_center[0][1]])]
+
+        pts1 = np.float32([marker_center[4], marker_center[5], src_center])
+        pts2 = np.float32([marker_center[4], marker_center[5], new_center])
+
+        M = cv2.getAffineTransform(pts1, pts2)
+        M[0][0] = 1
+        M[0][1] = 0.15
+        print(M)
         dst = cv2.warpAffine(self.image, M, (cols, rows))
+        cv2.imwrite("graphics/testtest.jpg", dst)
         cv2.imshow("test", dst)
         cv2.waitKey(0)
 

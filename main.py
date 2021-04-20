@@ -10,7 +10,7 @@ import numpy as np
 from detect import *
 # Input
 start_time = time.time()
-filename = '4_0.0_mid.jpg'
+filename = '0.0_2.0.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -26,10 +26,8 @@ def check_detected_tags():
                 writer.writerow(f"{fname}{new_image.ids}")
 
 
-
-
 new_image = tag_detection.Tag(filename, tag_type)
-
+# new_image.re_orient_image()
 shelf = markerlib.Shelf(new_image.markers)
 # box finding code:
 source_img = f'graphics/cv/{filename}'
@@ -58,6 +56,8 @@ for line in coords.split('\n'):
 
 errors = []
 for plane in shelf.planes:
+    if plane.plane_id == 2:
+        continue
     error = np.reshape(plane.get_x_error(), (1, -1)).tolist()
     errors.extend(error[0])
 
@@ -67,16 +67,15 @@ dev = []
 print(errors)
 for err in errors:
     dev.append((err-mean)**2)
-var = sum(dev)/mean
-std = np.sqrt(var)
+# var = sum(dev)/mean
+# std = np.sqrt(var)
 print(f'average absolute error:{mean} in mm')
-print(f'standard deviation: {std}')
+#print(f'standard deviation: {std}')
 
 
-#shelf.disp_planes(new_image, boxes)
-# turn coords into box objects:
-#shelf.add_box_plane(box)
 # shelf information:
 print(shelf)
-
+print(shelf.planes[0].get_plane_distance())
 shelf.disp_planes(new_image, boxes)
+
+
