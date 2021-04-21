@@ -10,7 +10,7 @@ import numpy as np
 from detect import *
 # Input
 start_time = time.time()
-filename = '1.0_2.0.jpg'
+filename = '0.0_0.0.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -64,7 +64,7 @@ for plane in shelf.planes:
     errors.extend(error[0])
 
     print(f'plane ID:{plane.plane_id} absolute error: {error[0]} in mm')
-mean = sum(errors)/12
+mean = np.mean(errors)
 dev = []
 print(errors)
 for err in errors:

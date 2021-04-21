@@ -52,7 +52,7 @@ class Plane:
         self.boxes = []
         self.real_x = [0, 2220]
         if plane_id == 0:
-            self.true_x_vals_left = [222, 645, 1318,  1733, ]
+            self.true_x_vals_left = [222, 645, 1318,  1733]
             self.true_x_vals_right = [622, 1245, 1718, 2028]
             self.real_z = 100
             self.real_y = 0
@@ -104,8 +104,8 @@ class Plane:
 
         factor_0 = self.get_average_marker_length(0) # pixel size of marker 0 (left marker when correctly oriented)
         factor_1 = self.get_average_marker_length(1) # pixel size of marker 1 (right marker when correctly oriented)
-        x_values = [(self.marker_multiplier*self.marker[0].size*p0_dist[0]*2/(factor_0 + factor_1)),
-                    (self.marker_multiplier*self.marker[0].size*p1_dist[0]*2/(factor_0 + factor_1))]
+        x_values = [(self.marker_multiplier*self.marker[0].size*p0_dist[0]/(factor_0*w0[0] + factor_1*w0[1])),
+                    (self.marker_multiplier*self.marker[0].size*p1_dist[0]/(factor_0*w1[0] + factor_1*w1[1]))]
         return x_values
 
     def get_average_marker_length(self, ind):

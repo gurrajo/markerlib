@@ -9,7 +9,7 @@ class Tag:
     """
     def __init__(self, fname, tag_type):
         self.fname = fname
-        self.image = self.image_read(f"graphics/skovde_4meter/{fname}")
+        self.image = self.image_read(f"graphics/skovde_3meter/{fname}")
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation

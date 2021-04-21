@@ -25,7 +25,7 @@ def check_detected_tags():
                 writer.writerow(f"{fname}{new_image.ids}")
 
 
-images = glob.glob('graphics/skovde_4meter/*.jpg')
+images = glob.glob('graphics/skovde_3meter/*.jpg')
 full_std = []
 full_mean = []
 full_errors = []
@@ -37,6 +37,8 @@ for i, fname in enumerate(images):
         continue
     if len(new_image.ids) < 6:
         print("5 or fewer ids detected")
+        continue
+    if fname == "1.0_0.0.jpg":
         continue
     shelf = markerlib.Shelf(new_image.markers)
 # box finding code:
@@ -71,7 +73,7 @@ for i, fname in enumerate(images):
         errors.extend(error[0])
 
         #print(f'plane ID:{plane.plane_id} absolute error: {error[0]} in mm')
-    mean = sum(errors) / 12
+    mean = np.mean(errors)
     dev = []
     #print(errors)
     for err in errors:
