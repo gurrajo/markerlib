@@ -86,7 +86,7 @@ class Plane:
         else:
             print(f"wrong plane id{plane_id}")
 
-        self.marker_multiplier = self.optimize_marker(0.5)
+        self.marker_multiplier = self.optimize_marker()
 
     def __str__(self):
         plane_str = f"plane :{self.plane_id} real y = {self.real_y}, real z = {self.real_z}\n"
@@ -141,17 +141,12 @@ class Plane:
         error = [abs(err) for err in error]
         return error
 
-    def optimize_marker(self, marker_multiplier):
-        calc_dist = 0
-        while abs(calc_dist - self.real_dist) > 10:
-            factor_0 = self.marker[0].size*2/((self.marker[0].x[1] - self.marker[0].x[0]) + (self.marker[0].x[2] - self.marker[0].x[3]))
-            factor_1 = self.marker[1].size*2/((self.marker[1].x[1] - self.marker[1].x[0]) + (self.marker[1].x[2] - self.marker[1].x[3]))
-            p_dist = self.marker[1].center_point[0] - self.marker[0].center_point[0]
-            calc_dist = marker_multiplier*p_dist*(factor_0+factor_1)/2
-            marker_multiplier += 1/200
-            if marker_multiplier > 1.5:
-                print("wrong marker multiplier probably")
-                return marker_multiplier
+    def optimize_marker(self):
+        factor_0 = self.marker[0].size*2/((self.marker[0].x[1] - self.marker[0].x[0]) + (self.marker[0].x[2] - self.marker[0].x[3]))
+        factor_1 = self.marker[1].size*2/((self.marker[1].x[1] - self.marker[1].x[0]) + (self.marker[1].x[2] - self.marker[1].x[3]))
+        p_dist = self.marker[1].center_point[0] - self.marker[0].center_point[0]
+        calc_dist = p_dist*(factor_0+factor_1)/2
+        marker_multiplier = self.real_dist/calc_dist
         return marker_multiplier
 
 class Marker:

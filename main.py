@@ -10,7 +10,7 @@ import numpy as np
 from detect import *
 # Input
 start_time = time.time()
-filename = '0.0_0.0.jpg'
+filename = '0.0_2.0.jpg'
 tag_type = 'aruco_4x4'
 
 
@@ -44,7 +44,7 @@ weights = 'best.pt'
 # save_img=True saves the image with boundingboxes
 
 # for fastest result use device='', save_txt=False, save_conf=True, save_img=False
-coords = detect2(source_img, weights, conf=0.7, iou_thres=0.45, device='', save_txt=False, save_conf=True,
+coords = detect2(source_img, weights, conf=0.6, iou_thres=0.5, device='', save_txt=False, save_conf=True,
                  save_img=False)
 
 h, w = new_image.image.shape[:2]
@@ -77,7 +77,12 @@ print(f'average absolute error:{mean} in mm')
 
 # shelf information:
 print(shelf)
-print(shelf.planes[0].get_plane_distance())
+# print(shelf.planes[0].get_plane_distance())
+# (h, w) = new_image.image.shape[:2]
+# dist_w = w*shelf.planes[2].marker_multiplier*shelf.planes[2].marker[1].size/shelf.planes[2].get_average_marker_length(1)
+# dist_h = h*shelf.planes[2].marker_multiplier*shelf.planes[2].marker[1].size/shelf.planes[2].get_average_marker_length(1)
+# print(dist_w)
+# print(dist_h)
 shelf.disp_planes(new_image, boxes)
 
 

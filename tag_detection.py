@@ -9,11 +9,12 @@ class Tag:
     """
     def __init__(self, fname, tag_type):
         self.fname = fname
-        self.image = self.image_read(f"graphics/skovde_3meter/{fname}")
+        self.image = self.image_read(f"graphics/skovde_4meter/{fname}")
+        cv2.imwrite(f'graphics/undistorted{self.fname}', self.image)
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
-
+        self.draw_tags()
         (h, w) = self.image.shape[:2]
         if self.ids is not None:
             if len(self.ids) == 6:
@@ -25,11 +26,15 @@ class Tag:
                     rot_matrix = cv2.getRotationMatrix2D((w // 2, h // 2), ang, 1)
                     self.image = cv2.warpAffine(self.image, rot_matrix, (w, h))
                     self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
+
                     if len(self.ids) == 6:
                         self.image = self.rotate_image()
                         self.draw_tags()
+                        cv2.imwrite(f'graphics/rotated{self.fname}', self.image)
                         break
         cv2.imwrite(f'graphics/cv/{self.fname}', self.image)
+        print(self.markers)
+        self.re_orient_image()
 
     def get_dict(self):
         super().__init__()
@@ -136,23 +141,18 @@ class Tag:
         return points
 
     def re_orient_image(self):
+
         rows, cols, ch = self.image.shape
 
         marker_center = []
         for marker in self.markers:
             marker_center.append([sum(marker[0]) / 4, sum(marker[1]) / 4])
-        src_center = [np.mean([marker_center[1][0], marker_center[0][0]]), np.mean([marker_center[1][1], marker_center[0][1]])]
-        new_center = [np.mean([marker_center[4][0], marker_center[5][0]]), np.mean([marker_center[1][1], marker_center[0][1]])]
+        pts1 = np.float32([[self.markers[5][0][0], self.markers[5][1][0]], [self.markers[5][0][1], self.markers[5][1][1]], [self.markers[5][0][2], self.markers[5][1][2]], [self.markers[5][0][3], self.markers[5][1][3]]])
+        pts2 = np.float32([[self.markers[5][0][0], self.markers[5][1][0]], [self.markers[5][0][1], self.markers[5][1][1]], [self.markers[5][0][1], self.markers[5][1][2]], [self.markers[5][0][0], self.markers[5][1][3]]])
 
-        pts1 = np.float32([marker_center[4], marker_center[5], src_center])
-        pts2 = np.float32([marker_center[4], marker_center[5], new_center])
-
-        M = cv2.getAffineTransform(pts1, pts2)
-        M[0][0] = 1
-        M[0][1] = 0.15
-        print(M)
-        dst = cv2.warpAffine(self.image, M, (cols, rows))
-        cv2.imwrite("graphics/testtest.jpg", dst)
+        M = cv2.getPerspectiveTransform(pts1, pts2)
+        dst = cv2.warpPerspective(self.image, M, (cols, rows))
+        #cv2.imwrite("graphics/testtest.jpg", dst)
         cv2.imshow("test", dst)
         cv2.waitKey(0)
 
