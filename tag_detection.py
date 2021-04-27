@@ -33,8 +33,6 @@ class Tag:
                         cv2.imwrite(f'graphics/rotated{self.fname}', self.image)
                         break
         cv2.imwrite(f'graphics/cv/{self.fname}', self.image)
-        print(self.markers)
-        self.re_orient_image()
 
     def get_dict(self):
         super().__init__()

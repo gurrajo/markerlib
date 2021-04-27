@@ -44,7 +44,7 @@ weights = 'best.pt'
 # save_img=True saves the image with boundingboxes
 
 # for fastest result use device='', save_txt=False, save_conf=True, save_img=False
-coords = detect2(source_img, weights, conf=0.6, iou_thres=0.5, device='', save_txt=False, save_conf=True,
+coords = detect2(source_img, weights, conf=0.7, iou_thres=0.7, device='', save_txt=False, save_conf=True,
                  save_img=False)
 
 h, w = new_image.image.shape[:2]
