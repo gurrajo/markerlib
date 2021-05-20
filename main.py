@@ -9,24 +9,10 @@ from detect import *
 start_time = time.time()
 filename = 'snapshot_2021_04_29_11_41_03.jpg'
 tag_type = 'aruco_4x4'
-folder = 2
+folder = '4_meter_ny'
+subfolder = 2
 
-
-def check_detected_tags():
-    images = glob.glob('graphics/images_from_tests/*.jpg')
-    for counter, fname in enumerate(images):
-        new_image = tag_detection.Tag(fname, tag_type)
-        with open('graphics/calibration_output/detected_tags_april.csv', 'a') as file:
-            writer = csv.writer(file)
-            if new_image.ids is None:
-                writer.writerow(f'{fname}NONE')
-            else:
-                writer.writerow(f"{fname}{new_image.ids}")
-
-
-
-
-new_image = tag_detection.Tag(filename, tag_type, folder)
+new_image = tag_detection.Tag(filename, tag_type, subfolder,  folder)
 camera_orientation = 0
 origin = [57.68897633, 11.97869986, 62, camera_orientation + new_image.rotation]
 shelf = markerlib.Shelf(new_image.markers, origin)

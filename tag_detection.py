@@ -7,9 +7,9 @@ class Tag:
     """
     Image object containing tag information
     """
-    def __init__(self, fname, tag_type, i):
+    def __init__(self, fname, tag_type, i, folder):
         self.fname = fname
-        self.image = self.image_read(f"graphics/4_meter_ny/{i}/{fname}")
+        self.image = self.image_read(f"graphics/{folder}/{i}/{fname}")
 
         self.tag_type = tag_type
         self.dict = self.get_dict()
