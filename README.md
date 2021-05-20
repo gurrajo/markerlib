@@ -3,7 +3,7 @@ Github for the bachelor thesis *Machine learning to detect the position of stora
 
 
 
-![plot](./graphics/inputoutput-2.png)
+![plot](./graphics/inputoutput-2.png | width=100)
 
 
 
