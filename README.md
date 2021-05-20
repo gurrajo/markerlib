@@ -3,7 +3,9 @@ Github for the bachelor thesis *Machine learning to detect the position of stora
 
 
 
-![plot](./graphics/inputoutput-2.png | width=100)
+![plot](./graphics/inputoutput-2.png )
+
+### Image above shows the input and output of the system, the input (to the left) is a image of storage bins with Aruco 4x4 markers and the output (to the right) shows the coordinates of each box in the WGS84 system 
 
 
 
