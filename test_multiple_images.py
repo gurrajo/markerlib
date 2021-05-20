@@ -69,12 +69,6 @@ for i in range(20):
                 shelf.add_box_plane(box)
 
         for plane in shelf.planes:
-            # if plane.plane_id == 2:
-            #     # if len(plane.boxes) > 2:
-            #     #     if i == 2:
-            #     #         plane.boxes = plane.boxes[0:2]
-            #     #     else:
-            #     #         plane.boxes = plane.boxes[1:3]
             error = plane.get_x_error()
             errors_mid.extend(error[0])
             errors_wid.extend(error[1])
