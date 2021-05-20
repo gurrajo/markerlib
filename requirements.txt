@@ -1,10 +1,18 @@
 # pip install -r requirements.txt
+# markerlib
+pymap3d>=2.6.1
+opencv>=4.0.1
+math
+json
+redis>=3.5.3
+glob
+os
 
-# base ----------------------------------------
+
+# base yolo----------------------------------------
 Cython
 matplotlib>=3.2.2
 numpy>=1.18.5
-opencv-python>=4.1.2
 Pillow
 PyYAML>=5.3.1
 scipy>=1.4.1
@@ -27,4 +35,4 @@ pandas
 
 # extras --------------------------------------
 thop  # FLOPS computation
-pycocotools>=2.0  # COCO mAP
+
