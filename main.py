@@ -18,7 +18,7 @@ origin = [57.68897633, 11.97869986, 62, camera_orientation + new_image.rotation]
 shelf = markerlib.Shelf(new_image.markers, origin)
 
 # box finding code:
-source_img = f'graphics/cv/{folder}/{filename}'
+source_img = f'graphics/cv/{subfolder}/{filename}'
 weights = 'ultimate_weights.pt'
 
 

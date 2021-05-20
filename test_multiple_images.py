@@ -1,29 +1,15 @@
-import csv
 import glob
 import tag_detection
-import distance_measurement
 import markerlib
-import math
-import time
 import os
 import numpy as np
 from detect import *
 # Input
 start_time = time.time()
 tag_type = 'aruco_4x4'
+folder = '4_meter_ny'
 
-
-def check_detected_tags():
-    images = glob.glob('graphics/images_from_tests/*.jpg')
-    for counter, fname in enumerate(images):
-        new_image = tag_detection.Tag(fname, tag_type)
-        with open('graphics/calibration_output/detected_tags_april.csv', 'a') as file:
-            writer = csv.writer(file)
-            if new_image.ids is None:
-                writer.writerow(f'{fname}NONE')
-            else:
-                writer.writerow(f"{fname}{new_image.ids}")
-
+camera_orientation = 0
 
 full_std = []
 full_mean = []
@@ -31,7 +17,7 @@ full_errors_mid = np.zeros((20, 114))
 full_errors_wid = np.zeros((20, 114))
 boxes_on_planes = np.zeros((20, 10))
 for i in range(20):
-    images = glob.glob(f'graphics/4_meter_ny/{i}/*.jpg')
+    images = glob.glob(f'graphics/{folder}/{i}/*.jpg')
     errors_mid = []
     errors_wid = []
     if i == 0:
@@ -46,7 +32,8 @@ for i in range(20):
     for j, fname in enumerate(images):
         amount_of_boxes = 0
         fname = os.path.basename(fname)
-        new_image = tag_detection.Tag(fname, tag_type, i)
+        new_image = tag_detection.Tag(fname, tag_type, i, folder)
+        origin = [57.68897633, 11.97869986, 62, camera_orientation + new_image.rotation]
         if new_image.ids is None:
             print("No ids detected")
             continue
@@ -57,7 +44,7 @@ for i in range(20):
             boxes_on_planes[i, j] = amount_of_boxes
             continue
         # box finding code:
-        shelf = markerlib.Shelf(new_image.markers)
+        shelf = markerlib.Shelf(new_image.markers, origin)
         source_img = f'graphics/cv/{i}/{fname}'
         weights = 'ultimate_weights.pt'
 
