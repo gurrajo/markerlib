@@ -1,5 +1,3 @@
-import csv
-import glob
 import tag_detection
 import markerlib
 import numpy as np

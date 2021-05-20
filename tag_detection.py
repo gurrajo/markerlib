@@ -125,17 +125,6 @@ class Tag:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    def optimal_plane_orientation(self, markers):
-        marker_center = []
-        for marker in markers:
-            marker_center.append([sum(marker[0]) / 4, sum(marker[1]) / 4])
-
-        points = [[marker_center[0]],
-                  [marker_center[1]],
-                  [(marker_center[4][0] + marker_center[5][0])/2, (marker_center[4][1] + marker_center[5][1])/2]]
-        b_h_ratio = (marker_center[4][0] - marker_center[5][0])/(marker_center[0][1]-marker_center[4][1])
-        return points
-
     def re_orient_image(self):
 
         rows, cols, ch = self.image.shape
