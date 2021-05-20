@@ -9,9 +9,10 @@ from detect import *
 start_time = time.time()
 filename = 'snapshot_2021_04_29_11_41_03.jpg'
 tag_type = 'aruco_4x4'
-folder = 2
+folder = '4_meter_ny'
+subfolder = 2
 
-new_image = tag_detection.Tag(filename, tag_type, folder)
+new_image = tag_detection.Tag(filename, tag_type, subfolder,  folder)
 camera_orientation = 0
 origin = [57.68897633, 11.97869986, 62, camera_orientation + new_image.rotation]
 shelf = markerlib.Shelf(new_image.markers, origin)
