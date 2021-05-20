@@ -7,20 +7,20 @@ class Tag:
     """
     Image object containing tag information
     """
-    def __init__(self, fname, tag_type):
+    def __init__(self, fname, tag_type, i):
         self.fname = fname
-        self.image = self.image_read(f"graphics/skovde_4meter/{fname}")
-        cv2.imwrite(f'graphics/undistorted{self.fname}', self.image)
+        self.image = self.image_read(f"graphics/4_meter_ny/{i}/{fname}")
+
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
-        self.draw_tags()
         (h, w) = self.image.shape[:2]
         if self.ids is not None:
             if len(self.ids) == 6:
-                self.image = self.rotate_image()
+                self.image, self.rotation = self.rotate_image()
             else:
-                temp_image = self.image
+                temp_image = self.image.copy()
+                print('rot')
                 for ang in range(5, 361, 5):
                     self.image = temp_image
                     rot_matrix = cv2.getRotationMatrix2D((w // 2, h // 2), ang, 1)
@@ -28,12 +28,9 @@ class Tag:
                     self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
 
                     if len(self.ids) == 6:
-                        self.image = self.rotate_image()
-                        self.draw_tags()
-                        cv2.imwrite(f'graphics/rotated{self.fname}', self.image)
+                        self.image, self.rotation = self.rotate_image()
                         break
-        cv2.imwrite(f'graphics/cv/{self.fname}', self.image)
-
+        cv2.imwrite(f'graphics/cv/{i}/{self.fname}', self.image)
     def get_dict(self):
         super().__init__()
         if self.tag_type == 'aruco_4x4':
@@ -77,8 +74,9 @@ class Tag:
             rotation_matrix = cv2.getRotationMatrix2D((cX, cY), 180, 1.0)
             rot_image = cv2.warpAffine(rot_image, rotation_matrix, (w, h))
             self.rotate_tags(rotation_matrix)
+            angle_degrees += 180
 
-        return rot_image
+        return rot_image, angle_degrees
 
     def detect_tags(self):
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)

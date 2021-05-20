@@ -1,17 +1,15 @@
 import csv
 import glob
 import tag_detection
-import distance_measurement
 import markerlib
-import math
-import time
-import os
 import numpy as np
 from detect import *
+
 # Input
 start_time = time.time()
-filename = '0.0_2.0.jpg'
+filename = 'snapshot_2021_04_29_11_41_03.jpg'
 tag_type = 'aruco_4x4'
+folder = 2
 
 
 def check_detected_tags():
@@ -25,15 +23,17 @@ def check_detected_tags():
             else:
                 writer.writerow(f"{fname}{new_image.ids}")
 
-def write_shelf_text():
-    asd = 0
 
-new_image = tag_detection.Tag(filename, tag_type)
-# new_image.re_orient_image()
-shelf = markerlib.Shelf(new_image.markers)
+
+
+new_image = tag_detection.Tag(filename, tag_type, folder)
+camera_orientation = 0
+origin = [57.68897633, 11.97869986, 62, camera_orientation + new_image.rotation]
+shelf = markerlib.Shelf(new_image.markers, origin)
+
 # box finding code:
-source_img = f'graphics/cv/{filename}'
-weights = 'best.pt'
+source_img = f'graphics/cv/{folder}/{filename}'
+weights = 'ultimate_weights.pt'
 
 
 # conf is the confidence threshold of the detection
@@ -44,7 +44,7 @@ weights = 'best.pt'
 # save_img=True saves the image with boundingboxes
 
 # for fastest result use device='', save_txt=False, save_conf=True, save_img=False
-coords = detect2(source_img, weights, conf=0.7, iou_thres=0.7, device='', save_txt=False, save_conf=True,
+coords = detect2(source_img, weights, conf=0.825, iou_thres=0.5, device='', save_txt=False, save_conf=True,
                  save_img=False)
 
 h, w = new_image.image.shape[:2]
@@ -55,11 +55,8 @@ for line in coords.split('\n'):
         boxes.append(box)
         shelf.add_box_plane(box)
 
-
 errors = []
 for plane in shelf.planes:
-    if plane.plane_id == 2:
-        continue
     error = np.reshape(plane.get_x_error(), (1, -1)).tolist()
     errors.extend(error[0])
 
@@ -69,20 +66,12 @@ dev = []
 print(errors)
 for err in errors:
     dev.append((err-mean)**2)
-# var = sum(dev)/mean
-# std = np.sqrt(var)
-print(f'average absolute error:{mean} in mm')
-#print(f'standard deviation: {std}')
+print(f'average error:{mean} in mm')
+
 
 
 # shelf information:
 print(shelf)
-# print(shelf.planes[0].get_plane_distance())
-# (h, w) = new_image.image.shape[:2]
-# dist_w = w*shelf.planes[2].marker_multiplier*shelf.planes[2].marker[1].size/shelf.planes[2].get_average_marker_length(1)
-# dist_h = h*shelf.planes[2].marker_multiplier*shelf.planes[2].marker[1].size/shelf.planes[2].get_average_marker_length(1)
-# print(dist_w)
-# print(dist_h)
+shelf.redis_send()
 shelf.disp_planes(new_image, boxes)
-
 
