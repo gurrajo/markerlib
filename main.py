@@ -57,6 +57,8 @@ for err in errors:
 # shelf information:
 #print(shelf)
 print(shelf.planes[0].get_box_coordinates(shelf.planes[0].boxes[0]))
-#shelf.redis_send()
+shelf.redis_send()
 shelf.disp_planes(new_image)
+end_time = time.time()
+print(end_time - start_time)
 

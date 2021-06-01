@@ -33,8 +33,7 @@ class Shelf:
         """Displays a picture with lines for boxes and plane y-boundaries"""
         # Plot plane areas:
         for plane in self.planes:
-            box = self.planes[0].boxes[0]
-            for box in plane.boxes[0]:
+            for box in plane.boxes:
                 cv2.line(tag.image, (math.floor(box.x[0]), math.floor(box.y[0])),
                          (math.floor(box.x[1]), math.floor(box.y[0])), (0, 255, 0), 2)
                 cv2.line(tag.image, (math.floor(box.x[1]), math.floor(box.y[0])),
@@ -90,6 +89,7 @@ class Shelf:
         # r = redis.Redis(host='localhost', port=6379, db=0)
         ## Setting BinDetectionModel(on Redis server) to json_to_server(coordinates+number of boxes)
         # r.set("BinDetectionModel", json_to_server)
+
         ## To get the coordinates(json format) from Redis
         # json_from_server = json.loads(r.get("BoxModel"))
         ## Access total number of boxes
@@ -109,7 +109,7 @@ class Plane:
         if plane_id == 0:
             self.true_x_vals_left = [200, 630, 1730]  # correct values for boxes, used for evaluation
             self.true_x_vals_right = [600, 1230, 2130]  # correct values for boxes, used for evaluation
-            self.real_z = 100  # plane edge z-value
+            self.real_z = 0  # plane edge z-value
             self.real_y = 0  # plane edge y-value
             self.marker_ids = [0, 1]
             self.markers = self.get_markers(markers)
