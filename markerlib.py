@@ -33,7 +33,8 @@ class Shelf:
         """Displays a picture with lines for boxes and plane y-boundaries"""
         # Plot plane areas:
         for plane in self.planes:
-            for box in plane.boxes:
+            box = self.planes[0].boxes[0]
+            for box in plane.boxes[0]:
                 cv2.line(tag.image, (math.floor(box.x[0]), math.floor(box.y[0])),
                          (math.floor(box.x[1]), math.floor(box.y[0])), (0, 255, 0), 2)
                 cv2.line(tag.image, (math.floor(box.x[1]), math.floor(box.y[0])),
@@ -42,7 +43,6 @@ class Shelf:
                          (math.floor(box.x[0]), math.floor(box.y[1])), (0, 255, 0), 2)
                 cv2.line(tag.image, (math.floor(box.x[0]), math.floor(box.y[1])),
                          (math.floor(box.x[0]), math.floor(box.y[0])), (0, 255, 0), 2)
-
 
             cv2.line(tag.image,
                      (math.floor(plane.x[0]), math.floor(plane.upper_limit)),

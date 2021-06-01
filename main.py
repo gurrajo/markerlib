@@ -5,10 +5,10 @@ from detect import *
 
 # Input
 start_time = time.time()
-filename = 'snapshot_2021_04_29_11_42_38.jpg'
+filename = 'snapshot_2021_04_29_11_48_17.jpg'
 tag_type = 'aruco_4x4'
 folder = '4_meter_ny'
-subfolder = 7
+subfolder = 4
 
 new_image = tag_detection.Tag(filename, tag_type, subfolder,  folder)
 camera_orientation = 0
@@ -44,18 +44,19 @@ for plane in shelf.planes:
     error = np.reshape(plane.get_x_error(), (1, -1)).tolist()
     errors.extend(error[0])
 
-    print(f'plane ID:{plane.plane_id} absolute error: {error[0]} in mm')
+    #print(f'plane ID:{plane.plane_id} absolute error: {error[0]} in mm')
 mean = np.mean(errors)
 dev = []
-print(errors)
+#print(errors)
 for err in errors:
     dev.append((err-mean)**2)
-print(f'average error:{mean} in mm')
+#print(f'average error:{mean} in mm')
 
 
 
 # shelf information:
-print(shelf)
-shelf.redis_send()
+#print(shelf)
+print(shelf.planes[0].get_box_coordinates(shelf.planes[0].boxes[0]))
+#shelf.redis_send()
 shelf.disp_planes(new_image)
 

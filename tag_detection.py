@@ -14,7 +14,6 @@ class Tag:
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
-        self.draw_tags()
         (h, w) = self.image.shape[:2]
         if self.ids is not None:
             if len(self.ids) == 6:
@@ -23,7 +22,7 @@ class Tag:
                 temp_image = self.image.copy()
                 print('rot')
                 for ang in range(5, 361, 5):
-                    self.image = temp_image
+                    self.image = temp_image.copy()
                     rot_matrix = cv2.getRotationMatrix2D((w // 2, h // 2), ang, 1)
                     self.image = cv2.warpAffine(self.image, rot_matrix, (w, h))
                     self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
@@ -31,7 +30,6 @@ class Tag:
                     if len(self.ids) == 6:
                         self.image, self.rotation = self.rotate_image()
                         break
-        self.draw_tags()
         cv2.imwrite(f'graphics/cv/{i}/{self.fname}', self.image)
     def get_dict(self):
         super().__init__()
@@ -57,7 +55,6 @@ class Tag:
         image = cv2.imread(fname)
         h, w = image.shape[:2]
         dst = cv2.undistort(image, matrix, distortion, None, newcameramtx)
-        cv2.imwrite('graphics/kalib.jpg', dst)
         return dst
 
     def rotate_image(self):
