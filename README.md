@@ -1,6 +1,6 @@
 # Machine learning to detect the position of storage bins (Chalmers Bachelor Thesis EENX15-21-19 )
 
-Github for the bachelor thesis _Machine learning to detect the position of storage bins_ at Chalmers done by Ismail Gülec, Gustav Onbeck, Marcus Berg, Khalid Barkhad, Iman Shahmari and Alexander Bodin. The goal of the thesis was to develope a model for detection of storage bins at Volvo. Special thanks to our supervisors, Knut Åkesson from Chalmers and Jacques Roubaud from Volvo, for helping us throughout the course of the thesis.
+Github for the bachelor thesis _Machine learning to detect the position of storage bins_[(pdf)](https://github.com/gurrajo/markerlib/raw/master/EENX15_21_19_Storagebins_final.pdf) at Chalmers done by Ismail Gülec, Gustav Onbeck, Marcus Berg, Khalid Barkhad, Iman Shahmari and Alexander Bodin. The goal of the thesis was to develope a model for detection of storage bins at Volvo. Special thanks to our supervisors, Knut Åkesson from Chalmers and Jacques Roubaud from Volvo, for helping us throughout the course of the thesis.
 
 ![plot](./graphics/inputoutput-2.png)
 
