@@ -5,7 +5,7 @@ import csv
 
 
 def get_calibration_matrix():
-    draw = False  # True when detected img pattern is drawn
+    draw = True  # True when detected img pattern is drawn
     # termination criteria
     criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
@@ -26,10 +26,13 @@ def get_calibration_matrix():
             imgpoints.append(corners)
             if draw:
                 # Draw and display the corners
+
                 cv.drawChessboardCorners(img, (6, 9), corners, ret)
+                img = cv.resize(img, (1152, 864))
                 cv.imwrite('IMG2-detection.png', img)
                 cv.imshow('img', img)
-                cv.waitKey(500)
+                cv.waitKey(0)
+                cv.destroyAllWindows()
 
     img2 = cv.imread('graphics/calibration_pattern/snapshot_2021_03_22_15_27_51.jpg')
     gray = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)

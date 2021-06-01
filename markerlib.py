@@ -29,10 +29,21 @@ class Shelf:
         """Converts shelf information to a string"""
         return "".join([str(plane) for plane in self.planes]) + f"\nboxes not on any shelf found: {self.boxes_not_on_shelf}"
 
-    def disp_planes(self, tag,  boxes):
+    def disp_planes(self, tag):
         """Displays a picture with lines for boxes and plane y-boundaries"""
         # Plot plane areas:
         for plane in self.planes:
+            for box in plane.boxes:
+                cv2.line(tag.image, (math.floor(box.x[0]), math.floor(box.y[0])),
+                         (math.floor(box.x[1]), math.floor(box.y[0])), (0, 255, 0), 2)
+                cv2.line(tag.image, (math.floor(box.x[1]), math.floor(box.y[0])),
+                         (math.floor(box.x[1]), math.floor(box.y[1])), (0, 255, 0), 2)
+                cv2.line(tag.image, (math.floor(box.x[1]), math.floor(box.y[1])),
+                         (math.floor(box.x[0]), math.floor(box.y[1])), (0, 255, 0), 2)
+                cv2.line(tag.image, (math.floor(box.x[0]), math.floor(box.y[1])),
+                         (math.floor(box.x[0]), math.floor(box.y[0])), (0, 255, 0), 2)
+
+
             cv2.line(tag.image,
                      (math.floor(plane.x[0]), math.floor(plane.upper_limit)),
                      (math.floor(plane.x[1]), math.floor(plane.upper_limit)),
@@ -41,20 +52,11 @@ class Shelf:
                      (math.floor(plane.x[0]), math.floor(plane.lower_limit)),
                      (math.floor(plane.x[1]), math.floor(plane.lower_limit)),
                      (255, 0, 0), 1)
-
-        # Plot boxes:
-        for box in boxes:
-            cv2.line(tag.image, (math.floor(box.x[0]), math.floor(box.y[0])),
-                     (math.floor(box.x[1]), math.floor(box.y[0])), (0, 255, 0), 2)
-            cv2.line(tag.image, (math.floor(box.x[1]), math.floor(box.y[0])),
-                     (math.floor(box.x[1]), math.floor(box.y[1])), (0, 255, 0), 2)
-            cv2.line(tag.image, (math.floor(box.x[1]), math.floor(box.y[1])),
-                     (math.floor(box.x[0]), math.floor(box.y[1])), (0, 255, 0), 2)
-            cv2.line(tag.image, (math.floor(box.x[0]), math.floor(box.y[1])),
-                     (math.floor(box.x[0]), math.floor(box.y[0])), (0, 255, 0), 2)
         cv2.imshow('Shelf planes', tag.image)
         cv2.imwrite("graphics/temp.jpg", tag.image)  # overwritten every time
         cv2.waitKey(0)
+        # Plot boxes:
+
 
     def redis_send(self):
         coordinates_shelf = []
@@ -109,6 +111,8 @@ class Plane:
             self.true_x_vals_right = [600, 1230, 2130]  # correct values for boxes, used for evaluation
             self.real_z = 100  # plane edge z-value
             self.real_y = 0  # plane edge y-value
+            self.marker_ids = [0, 1]
+            self.markers = self.get_markers(markers)
             self.marker = [Marker(markers[0]), Marker(markers[1])]  # markers associated with plane, uses the sorting to correctly assign. (should use marker id instead)
             self.y = (self.marker[0].y[3] + self.marker[1].y[3])/2  # image location of plane on y axis
             self.x = [self.marker[0].center_point[0], self.marker[1].center_point[0]]  # image location of plane on x axis
@@ -120,6 +124,7 @@ class Plane:
             self.true_x_vals_right = [365, 700, 1500, 1815, 2130]
             self.real_z = 200
             self.real_y = 50
+            self.marker_ids = [2, 3]
             self.marker = [Marker(markers[2]), Marker(markers[3])]
             self.y = (self.marker[0].y[3] + self.marker[1].y[3])/2
             self.x = [self.marker[0].center_point[0], self.marker[1].center_point[0]]
@@ -131,6 +136,7 @@ class Plane:
             self.true_x_vals_right = [1240, 2120]
             self.real_z = 300
             self.real_y = 100
+            self.marker_ids = [4, 5]
             self.marker = [Marker(markers[4]), Marker(markers[5])]
             self.y = (self.marker[0].y[3] + self.marker[1].y[3])/2
             self.x = [self.marker[0].center_point[0], self.marker[1].center_point[0]]
@@ -214,6 +220,21 @@ class Plane:
             error_mid.append(middle_calc - middle_real)
             error_wid.append(width_calc - width_real)
         return [error_mid, error_wid]
+
+    def get_markers(self, markers):
+        for marker in markers:
+            if marker[2] == self.marker_ids[0]:
+                plane_markers = marker
+                break
+
+        for marker in markers:
+            if marker[2] == self.marker_ids[1]:
+                plane_markers.append(marker)
+                break
+        if len(plane_markers) < 2:
+            print('marker not found')
+
+        return plane_markers
 
     def optimize_marker(self):
         """Corrects the x-axis calcualtions using the already known distance between markers"""

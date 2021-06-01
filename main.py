@@ -5,10 +5,10 @@ from detect import *
 
 # Input
 start_time = time.time()
-filename = 'snapshot_2021_04_29_11_41_03.jpg'
+filename = 'snapshot_2021_04_29_11_42_38.jpg'
 tag_type = 'aruco_4x4'
 folder = '4_meter_ny'
-subfolder = 2
+subfolder = 7
 
 new_image = tag_detection.Tag(filename, tag_type, subfolder,  folder)
 camera_orientation = 0
@@ -57,5 +57,5 @@ print(f'average error:{mean} in mm')
 # shelf information:
 print(shelf)
 shelf.redis_send()
-shelf.disp_planes(new_image, boxes)
+shelf.disp_planes(new_image)
 

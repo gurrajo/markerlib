@@ -14,6 +14,7 @@ class Tag:
         self.tag_type = tag_type
         self.dict = self.get_dict()
         self.markers, self.corners, self.ids = self.detect_tags()  # necessary for rotation
+        self.draw_tags()
         (h, w) = self.image.shape[:2]
         if self.ids is not None:
             if len(self.ids) == 6:
@@ -30,6 +31,7 @@ class Tag:
                     if len(self.ids) == 6:
                         self.image, self.rotation = self.rotate_image()
                         break
+        self.draw_tags()
         cv2.imwrite(f'graphics/cv/{i}/{self.fname}', self.image)
     def get_dict(self):
         super().__init__()
@@ -47,14 +49,15 @@ class Tag:
         return used_dict
 
     def image_read(self, fname):
-        matrix = np.array([[1239.9865705358163, 0.0, 1163.236496781095], [0.0, 1250.0790335853487, 904.7312724102765],[0.0, 0.0, 1.0]])
-        distortion = np.array([-0.2990077843090973, 0.11025572359961867, -0.0006408485381324832, 0.001213706562878266, -0.021134022438474565])
+        matrix = np.array([[1239.9865705358163, 0.0, 1163.236496781095], [0.0, 1250.0790335853487, 904.7312724102765], [0.0, 0.0, 1.0]])  # from database instead
+        distortion = np.array([-0.2990077843090973, 0.11025572359961867, -0.0006408485381324832, 0.001213706562878266, -0.021134022438474565])  # from database instead
         newcameramtx = np.array([[1.01386385e+03, 0.00000000e+00, 1.16515228e+03],
                                 [0.00000000e+00, 1.05031275e+03, 9.05845699e+02],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])  # alpha = 0.25
         image = cv2.imread(fname)
         h, w = image.shape[:2]
         dst = cv2.undistort(image, matrix, distortion, None, newcameramtx)
+        cv2.imwrite('graphics/kalib.jpg', dst)
         return dst
 
     def rotate_image(self):
@@ -79,6 +82,7 @@ class Tag:
         return rot_image, angle_degrees
 
     def detect_tags(self):
+
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         aruco_parameters = cv2.aruco.DetectorParameters_create()
         corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, self.dict, parameters=aruco_parameters)
@@ -120,7 +124,7 @@ class Tag:
         scale = 1
         image = cv2.resize(self.image, (0, 0), fx=scale, fy=scale)
         frame = cv2.aruco.drawDetectedMarkers(image, self.corners*scale, self.ids)
-        cv2.imwrite(f'graphics/calibration_output/test{self.fname}', image)
+        cv2.imwrite('graphics/rot.jpg', image)
         cv2.imshow('Tags', frame)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
