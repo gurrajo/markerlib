@@ -17,9 +17,9 @@ The report can be found here: [Download](https://github.com/gurrajo/markerlib/ra
 
 # Contributors
 
-Ismail Gülec
-Gustav Onbeck
-Marcus Berg
-Khalid Barkhad
-Iman Shahmari
-Alexander Bodin [(LinkedIn)](https://www.linkedin.com/in/alex-bodin)
+- Ismail Gülec
+- Gustav Onbeck
+- Marcus Berg
+- Khalid Barkhad
+- Iman Shahmari
+- Alexander Bodin [(LinkedIn)](https://www.linkedin.com/in/alex-bodin)
