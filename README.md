@@ -11,4 +11,15 @@ Github for the bachelor thesis _Machine learning to detect the position of stora
 Runs the detection model for one picture, prints out the results and sends a json file to the redis server.
 **NOTE : Sending to redis server not initialized: go to markerlib.redis_send(), remove the comment and change server adress**
 
+# Report
+
 The report can be found here: [Download](https://github.com/gurrajo/markerlib/raw/master/EENX15_21_19_Storagebins_final.pdf)
+
+# Contributors
+
+Ismail Gülec
+Gustav Onbeck
+Marcus Berg
+Khalid Barkhad
+Iman Shahmari
+Alexander Bodin [(LinkedIn)](https://www.linkedin.com/in/alex-bodin)
